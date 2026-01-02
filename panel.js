@@ -50,6 +50,7 @@ function handleAuth(auth) {
 
     socket.on('connect', () => {
         console.log('Connected to Socket.io!');
+        renderUI()
     });
 
     console.log("Loaded client auth")
