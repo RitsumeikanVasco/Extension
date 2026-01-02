@@ -31,6 +31,47 @@ async function fetchTeamStats() {
     return { team1Count: 42, team2Count: 38 };
 }
 
+// panel.js
+
+// 1. Define your handler separately
+function handleAuth(auth) {
+    console.log('Twitch Extension Authorized', auth);
+    
+    // Connect to your server
+    socket = io('https://declinatory-kayleigh-statesmanly.ngrok-free.dev', {
+        transports: ['websocket'], // This skips the HTTP handshake and goes straight to TCP
+        upgrade: false,
+        auth: auth
+    });
+
+    socket.on('connect_error', (err) => {
+        console.error("Connection Failed:", err.message);
+    });
+
+    socket.on('connect', () => {
+        console.log('Connected to Socket.io!');
+    });
+
+    console.log("Loaded client auth")
+}
+
+// 2. Register it normally for Twitch
+window.Twitch.ext.onAuthorized(handleAuth);
+
+// 3. MOCK: Manually trigger it ONLY if testing locally
+if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    console.log("Running in local mock mode...");
+    setTimeout(() => {
+        const mockAuth = { 
+            token: "mock_jwt_token", 
+            channelId: "123456", 
+            userId: "U12345678" 
+        }
+
+        handleAuth(mockAuth); 
+    }, 500);
+}
+
 // ==========================================
 // UI LOGIC
 // ==========================================
