@@ -1,282 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-    
-    <title>Team Panel</title>
     <meta charset="UTF-8">
-    <style>
-        html, body {
-        width: 100%;
-        height: 100%;
-        background: #0e0e10;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0e0e10;
-            color: #efeff1;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            min-height: 100%;
-            background: #0e0e10;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* Header with Points */
-        .header {
-            background: linear-gradient(135deg, #9147ff 0%, #772ce8 100%);
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .points-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .points-icon {
-            font-size: 24px;
-        }
-
-        .points-value {
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .points-label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: #18181b;
-            border-bottom: 2px solid #2c2c30;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            border: none;
-            background: none;
-            color: #adadb8;
-            font-size: 14px;
-        }
-
-        .tab:hover {
-            background: #1f1f23;
-            color: #efeff1;
-        }
-
-        .tab.active {
-            background: #1f1f23;
-            color: #9147ff;
-            border-bottom: 3px solid #9147ff;
-        }
-
-        /* Content Area */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Team Info */
-        .team-info {
-            background: #1f1f23;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #2c2c30;
-        }
-
-        .current-team {
-            text-align: center;
-        }
-
-        .team-badge {
-            display: inline-block;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .team-1 {
-            background: linear-gradient(135deg, #ff4655 0%, #e91916 100%);
-        }
-
-        .team-2 {
-            background: linear-gradient(135deg, #00a8ff 0%, #0084ff 100%);
-        }
-
-        /* Team Selection */
-        .team-selection {
-            text-align: center;
-        }
-
-        .team-selection h2 {
-            margin-bottom: 20px;
-            color: #efeff1;
-        }
-
-        .team-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .team-option {
-            background: #2c2c30;
-            border-radius: 12px;
-            padding: 30px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-        }
-
-        .team-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .team-option.team-1:hover {
-            border-color: #ff4655;
-            background: #3a2429;
-        }
-
-        .team-option.team-2:hover {
-            border-color: #00a8ff;
-            background: #1f2d3a;
-        }
-
-        .team-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .team-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .team-count {
-            font-size: 14px;
-            color: #adadb8;
-        }
-
-        /* Shop Items */
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .shop-item {
-            background: #1f1f23;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid #2c2c30;
-        }
-
-        .shop-item:hover {
-            transform: translateY(-5px);
-            border-color: #9147ff;
-            box-shadow: 0 8px 20px rgba(145, 71, 255, 0.3);
-        }
-
-        .shop-item:active {
-            transform: translateY(0);
-        }
-
-        .shop-item.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .shop-item.disabled:hover {
-            transform: none;
-            border-color: #2c2c30;
-            box-shadow: none;
-        }
-
-        .shop-item-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .shop-item-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .shop-item-price {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            color: #ffd700;
-            font-weight: bold;
-        }
-
-        /* Scrollbar */
-        .content::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .content::-webkit-scrollbar-track {
-            background: #18181b;
-        }
-
-        .content::-webkit-scrollbar-thumb {
-            background: #4a4a4f;
-            border-radius: 4px;
-        }
-
-        .content::-webkit-scrollbar-thumb:hover {
-            background: #5e5e66;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Panel</title>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <link rel="stylesheet" href="panel.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header with Points -->
         <div class="header">
             <div class="points-display">
                 <span class="points-icon">💎</span>
@@ -285,36 +17,31 @@
             <div class="points-label">Your Points</div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab(event, 'main')">Main</button>
-            <button class="tab" onclick="switchTab(event, 'shop')">Shop</button>
+        <div class="tabs" id="tabContainer">
+            <button class="tab active" data-tab="main">Main</button>
+            <button class="tab" data-tab="shop">Shop</button>
         </div>
 
-        <!-- Content -->
         <div class="content">
-            <!-- Main Tab -->
             <div id="mainTab" class="tab-content active">
                 <div class="team-info">
-                    <!-- Show this when user has a team -->
                     <div id="currentTeam" class="current-team" style="display: none;">
                         <h2>Your Team</h2>
                         <div class="team-badge" id="teamBadge"></div>
                     </div>
 
-                    <!-- Show this when user has no team -->
                     <div id="teamSelection" class="team-selection">
                         <h2>Choose Your Team</h2>
                         <p style="color: #adadb8; margin-bottom: 20px;">Select a team to join the battle!</p>
                         
-                        <div class="team-options">
-                            <div class="team-option team-1" onclick="selectTeam(1)">
+                        <div class="team-options" id="teamOptions">
+                            <div class="team-option team-1" data-team="1">
                                 <div class="team-icon">🔴</div>
                                 <div class="team-name">Team 1</div>
                                 <div class="team-count"><span id="team1Count">0</span> players</div>
                             </div>
                             
-                            <div class="team-option team-2" onclick="selectTeam(2)">
+                            <div class="team-option team-2" data-team="2">
                                 <div class="team-icon">🔵</div>
                                 <div class="team-name">Team 2</div>
                                 <div class="team-count"><span id="team2Count">0</span> players</div>
@@ -324,272 +51,13 @@
                 </div>
             </div>
 
-            <!-- Shop Tab -->
             <div id="shopTab" class="tab-content">
                 <div class="shop-grid" id="shopGrid">
-                    <!-- Shop items will be rendered here -->
-                </div>
+                    </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // ==========================================
-        // STATE MANAGEMENT
-        // ==========================================
-        let userData = {
-            points: 0,
-            team: null // null, 1, or 2
-        };
-
-        let teamStats = {
-            team1Count: 0,
-            team2Count: 0
-        };
-
-        // Shop items configuration - Easy to modify!
-        const shopItems = [
-            { id: 1, name: 'Power Up', icon: '⚡', price: 100 },
-            { id: 2, name: 'Shield', icon: '🛡️', price: 150 },
-            { id: 3, name: 'Boost', icon: '🚀', price: 200 },
-            { id: 4, name: 'Health', icon: '❤️', price: 80 },
-            { id: 5, name: 'Speed', icon: '💨', price: 120 },
-            { id: 6, name: 'Coin x2', icon: '💰', price: 300 }
-        ];
-
-        // ==========================================
-        // API INTEGRATION FUNCTIONS
-        // ==========================================
-        
-        /**
-         * Fetch user data from your API
-         * Replace this with your actual API call
-         */
-        async function fetchUserData() {
-            try {
-                // TODO: Replace with your actual API endpoint
-                // const response = await fetch('YOUR_API_ENDPOINT/user');
-                // const data = await response.json();
-                // return data;
-                
-                // Mock data for testing:
-                return {
-                    points: 250,
-                    team: null // Set to 1 or 2 if user has a team
-                };
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                return { points: 0, team: null };
-            }
-        }
-
-        /**
-         * Fetch team statistics from your API
-         */
-        async function fetchTeamStats() {
-            try {
-                // TODO: Replace with your actual API endpoint
-                // const response = await fetch('YOUR_API_ENDPOINT/teams/stats');
-                // const data = await response.json();
-                // return data;
-                
-                // Mock data for testing:
-                return {
-                    team1Count: 42,
-                    team2Count: 38
-                };
-            } catch (error) {
-                console.error('Error fetching team stats:', error);
-                return { team1Count: 0, team2Count: 0 };
-            }
-        }
-
-        /**
-         * Update user data (points, team, etc.)
-         * Call this function whenever you want to refresh the display
-         */
-        function updateUserData(data) {
-            userData.points = data.points || 0;
-            userData.team = data.team || null;
-            renderUI();
-        }
-
-        /**
-         * Update team statistics
-         */
-        function updateTeamStats(stats) {
-            teamStats.team1Count = stats.team1Count || 0;
-            teamStats.team2Count = stats.team2Count || 0;
-            renderUI();
-        }
-
-        // ==========================================
-        // USER ACTIONS (Connect these to your API)
-        // ==========================================
-        
-        /**
-         * Handle team selection
-         * Modify this to send the selection to your API
-         */
-        async function selectTeam(teamNumber) {
-            try {
-                // TODO: Send team selection to your API
-                // const response = await fetch('YOUR_API_ENDPOINT/team/join', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ team: teamNumber })
-                // });
-                // const data = await response.json();
-                
-                // For now, update locally:
-                userData.team = teamNumber;
-                renderUI();
-                
-                console.log(`User selected Team ${teamNumber}`);
-            } catch (error) {
-                console.error('Error selecting team:', error);
-            }
-        }
-
-        /**
-         * Handle shop item purchase
-         * Modify this to send the purchase to your API
-         */
-        async function purchaseItem(item) {
-            // Check if user has enough points
-            if (userData.points < item.price) {
-                alert('Not enough points!');
-                return;
-            }
-
-            try {
-                // TODO: Send purchase request to your API
-                // const response = await fetch('YOUR_API_ENDPOINT/shop/purchase', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ itemId: item.id })
-                // });
-                // const data = await response.json();
-                
-                // For now, deduct points locally:
-                userData.points -= item.price;
-                renderUI();
-                
-                console.log(`Purchased item: ${item.name} for ${item.price} points`);
-                
-                // YOUR CUSTOM LOGIC HERE
-                // Add your item-specific logic based on item.id:
-                switch(item.id) {
-                    case 1: // Power Up
-                        console.log('Power Up activated!');
-                        break;
-                    case 2: // Shield
-                        console.log('Shield activated!');
-                        break;
-                    case 3: // Boost
-                        console.log('Boost activated!');
-                        break;
-                    case 4: // Health
-                        console.log('Health restored!');
-                        break;
-                    case 5: // Speed
-                        console.log('Speed boost activated!');
-                        break;
-                    case 6: // Coin x2
-                        console.log('Coin multiplier activated!');
-                        break;
-                }
-            } catch (error) {
-                console.error('Error purchasing item:', error);
-            }
-        }
-
-        // ==========================================
-        // UI RENDERING
-        // ==========================================
-        
-        function renderUI() {
-            // Update points display
-            document.getElementById('pointsValue').textContent = userData.points;
-
-            // Update team display
-            if (userData.team) {
-                document.getElementById('currentTeam').style.display = 'block';
-                document.getElementById('teamSelection').style.display = 'none';
-                
-                const teamBadge = document.getElementById('teamBadge');
-                teamBadge.textContent = `Team ${userData.team}`;
-                teamBadge.className = `team-badge team-${userData.team}`;
-            } else {
-                document.getElementById('currentTeam').style.display = 'none';
-                document.getElementById('teamSelection').style.display = 'block';
-            }
-
-            // Update team counts
-            document.getElementById('team1Count').textContent = teamStats.team1Count;
-            document.getElementById('team2Count').textContent = teamStats.team2Count;
-
-            // Render shop items
-            renderShop();
-        }
-
-        function renderShop() {
-            const shopGrid = document.getElementById('shopGrid');
-            shopGrid.innerHTML = shopItems.map(item => {
-                const canAfford = userData.points >= item.price;
-                const disabledClass = canAfford ? '' : 'disabled';
-                
-                return `
-                    <div class="shop-item ${disabledClass}" onclick="${canAfford ? `purchaseItem(${JSON.stringify(item).replace(/"/g, '&quot;')})` : 'void(0)'}">
-                        <div class="shop-item-icon">${item.icon}</div>
-                        <div class="shop-item-name">${item.name}</div>
-                        <div class="shop-item-price">
-                            <span>💎</span>
-                            <span>${item.price}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function switchTab(event, tabName) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            document.getElementById(tabName + 'Tab').classList.add('active');
-        }
-
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
-        
-        async function init() {
-            // Fetch initial data
-            const [userDataResponse, teamStatsResponse] = await Promise.all([
-                fetchUserData(),
-                fetchTeamStats()
-            ]);
-
-            updateUserData(userDataResponse);
-            updateTeamStats(teamStatsResponse);
-
-            // Set up Twitch Extension Helper
-            if (window.Twitch && window.Twitch.ext) {
-                window.Twitch.ext.onAuthorized((auth) => {
-                    console.log('Twitch Extension Authorized', auth);
-                    // You can use auth.userId, auth.channelId, auth.token here
-                });
-            }
-        }
-
-        // Start the extension
-        init();
-    </script>
+    <script src="panel.js"></script>
 </body>
 </html>
