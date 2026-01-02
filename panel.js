@@ -50,6 +50,23 @@ function handleAuth(auth) {
 
     socket.on('connect', () => {
         console.log('Connected to Socket.io!');
+
+        function updatePoints(newPoints){
+            userData.points = newPoints
+
+            renderUI()
+        }
+
+        // Called when points changed
+        socket.on("updatedValues", (points)=>{
+            updatePoints(points)
+        })
+
+        // Gets the current points
+        socket.emit("getPoints", (points) => {
+            updatePoints(points)
+        });
+
         renderUI()
     });
 
