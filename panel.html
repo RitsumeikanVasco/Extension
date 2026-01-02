@@ -277,8 +277,8 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('main')">Main</button>
-            <button class="tab" onclick="switchTab('shop')">Shop</button>
+            <button class="tab active" onclick="switchTab(event, 'main')">Main</button>
+            <button class="tab" onclick="switchTab(event, 'shop')">Shop</button>
         </div>
 
         <!-- Content -->
@@ -543,23 +543,17 @@
             }).join('');
         }
 
-        function switchTab(tabName) {
-            // Update tab buttons
+        function switchTab(event, tabName) {
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
 
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            
-            if (tabName === 'main') {
-                document.getElementById('mainTab').classList.add('active');
-            } else if (tabName === 'shop') {
-                document.getElementById('shopTab').classList.add('active');
-            }
+
+            document.getElementById(tabName + 'Tab').classList.add('active');
         }
 
         // ==========================================
