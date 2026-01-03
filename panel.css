@@ -29,21 +29,37 @@ body {
 /* Header */
 .header {
     background: linear-gradient(135deg, #9147ff 0%, #772ce8 100%);
-    padding: 20px;
+    padding: 12px 20px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
+
+.header-team-badge {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    opacity: 0.95;
+}
+
+.header-team-badge.team-1 { background: linear-gradient(135deg, #ff4655 0%, #e91916 100%); }
+.header-team-badge.team-2 { background: linear-gradient(135deg, #00a8ff 0%, #0084ff 100%); }
 
 .points-display {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-.points-icon { font-size: 24px; }
-.points-value { font-size: 32px; font-weight: bold; }
-.points-label { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+.points-icon { font-size: 20px; }
+.points-value { font-size: 26px; font-weight: bold; }
+.points-label { font-size: 12px; opacity: 0.9; margin-top: 3px; }
 
 /* Tabs */
 .tabs {
@@ -67,6 +83,11 @@ body {
 
 .tab:hover { background: #1f1f23; color: #efeff1; }
 .tab.active { background: #1f1f23; color: #9147ff; border-bottom: 3px solid #9147ff; }
+.tab.disabled { 
+    opacity: 0.4; 
+    cursor: not-allowed; 
+    pointer-events: none;
+}
 
 /* Content Area */
 .content {
@@ -101,11 +122,11 @@ body {
 .team-2 { background: linear-gradient(135deg, #00a8ff 0%, #0084ff 100%); }
 
 .team-selection { text-align: center; }
-.team-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+.team-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
 .team-option {
     background: #2c2c30;
-    border-radius: 12px;
-    padding: 30px 20px;
+    border-radius: 10px;
+    padding: 20px 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 3px solid transparent;
@@ -116,11 +137,11 @@ body {
 .team-option.team-2:hover { border-color: #00a8ff; background: #1f2d3a; }
 
 /* Shop */
-.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 .shop-item {
     background: #1f1f23;
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 15px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -128,9 +149,78 @@ body {
 }
 
 .shop-item:hover { transform: translateY(-5px); border-color: #9147ff; box-shadow: 0 8px 20px rgba(145,71,255,0.3); }
-.shop-item.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-.shop-item-icon { font-size: 48px; margin-bottom: 10px; }
-.shop-item-price { color: #ffd700; font-weight: bold; }
+.shop-item.disabled { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+.shop-item.disabled .shop-item-name,
+.shop-item.disabled .shop-item-price { color: #ff4655; }
+.shop-item-icon { font-size: 36px; margin-bottom: 8px; }
+.shop-item-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.shop-item-price { color: #ffd700; font-weight: bold; font-size: 14px; }
+
+/* Attacks */
+.attack-voting { padding: 10px; }
+.attack-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+    gap: 12px; 
+}
+
+.attack-item {
+    background: #1f1f23;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #2c2c30;
+}
+
+.attack-item:hover { 
+    transform: translateY(-5px); 
+    border-color: #ffa500; 
+    box-shadow: 0 8px 20px rgba(255,165,0,0.3); 
+}
+
+.attack-item-icon { font-size: 36px; margin-bottom: 8px; }
+.attack-item-name { font-size: 13px; font-weight: 600; }
+
+.attack-voted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+}
+
+.voted-message {
+    text-align: center;
+    background: #1f1f23;
+    border-radius: 12px;
+    padding: 40px;
+    border: 2px solid #2c2c30;
+}
+
+.voted-icon {
+    font-size: 80px;
+    color: #00ff7f;
+    margin-bottom: 20px;
+    animation: scaleIn 0.5s ease;
+}
+
+.voted-message h2 {
+    color: #00ff7f;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.voted-message p {
+    color: #adadb8;
+    font-size: 16px;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
 
 /* Scrollbar */
 .content::-webkit-scrollbar { width: 8px; }
