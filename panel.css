@@ -67,6 +67,11 @@ body {
 
 .tab:hover { background: #1f1f23; color: #efeff1; }
 .tab.active { background: #1f1f23; color: #9147ff; border-bottom: 3px solid #9147ff; }
+.tab.disabled { 
+    opacity: 0.4; 
+    cursor: not-allowed; 
+    pointer-events: none;
+}
 
 /* Content Area */
 .content {
@@ -131,6 +136,72 @@ body {
 .shop-item.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 .shop-item-icon { font-size: 48px; margin-bottom: 10px; }
 .shop-item-price { color: #ffd700; font-weight: bold; }
+
+/* Attacks */
+.attack-voting { padding: 10px; }
+.attack-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+    gap: 15px; 
+}
+
+.attack-item {
+    background: #1f1f23;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #2c2c30;
+}
+
+.attack-item:hover { 
+    transform: translateY(-5px); 
+    border-color: #ff4655; 
+    box-shadow: 0 8px 20px rgba(255,70,85,0.3); 
+}
+
+.attack-item-icon { font-size: 48px; margin-bottom: 10px; }
+.attack-item-name { font-size: 14px; font-weight: 600; }
+
+.attack-voted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+}
+
+.voted-message {
+    text-align: center;
+    background: #1f1f23;
+    border-radius: 12px;
+    padding: 40px;
+    border: 2px solid #2c2c30;
+}
+
+.voted-icon {
+    font-size: 80px;
+    color: #00ff7f;
+    margin-bottom: 20px;
+    animation: scaleIn 0.5s ease;
+}
+
+.voted-message h2 {
+    color: #00ff7f;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.voted-message p {
+    color: #adadb8;
+    font-size: 16px;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
 
 /* Scrollbar */
 .content::-webkit-scrollbar { width: 8px; }

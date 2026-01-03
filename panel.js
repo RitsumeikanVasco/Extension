@@ -3,7 +3,8 @@
 // ==========================================
 let userData = {
     points: 0,
-    team: null
+    team: null,
+    hasVoted: false
 };
 
 let teamStats = {
@@ -19,6 +20,31 @@ const shopItems = [
     { id: 5, name: 'Speed', icon: '💨', price: 120 },
     { id: 6, name: 'Coin x2', icon: '💰', price: 300 }
 ];
+
+const attackOptions = [
+    { id: 1, name: 'Fireball', icon: '🔥' },
+    { id: 2, name: 'Lightning', icon: '⚡' },
+    { id: 3, name: 'Ice Blast', icon: '❄️' },
+    { id: 4, name: 'Earth Spike', icon: '🌍' },
+    { id: 5, name: 'Wind Slash', icon: '💨' },
+    { id: 6, name: 'Dark Energy', icon: '🌑' }
+];
+
+// ==========================================
+// STATE RESET FUNCTION - Easy to use!
+// ==========================================
+function resetState() {
+    userData = {
+        points: 0,
+        team: null,
+        hasVoted: false
+    };
+    renderUI();
+    console.log('State has been reset!');
+}
+
+// Make resetState globally accessible - just type resetState() in console
+window.resetState = resetState;
 
 // ==========================================
 // API MOCKS (Replace with real Fetch calls)
@@ -97,13 +123,23 @@ if (window.location.hostname === "localhost" || window.location.hostname === "12
 function renderUI() {
     document.getElementById('pointsValue').textContent = userData.points;
 
+    // Enable/disable tabs based on team selection
+    const attacksTabBtn = document.getElementById('attacksTabBtn');
+    const shopTabBtn = document.getElementById('shopTabBtn');
+    
     if (userData.team) {
+        attacksTabBtn.classList.remove('disabled');
+        shopTabBtn.classList.remove('disabled');
+        
         document.getElementById('currentTeam').style.display = 'block';
         document.getElementById('teamSelection').style.display = 'none';
         const badge = document.getElementById('teamBadge');
         badge.textContent = `Team ${userData.team}`;
         badge.className = `team-badge team-${userData.team}`;
     } else {
+        attacksTabBtn.classList.add('disabled');
+        shopTabBtn.classList.add('disabled');
+        
         document.getElementById('currentTeam').style.display = 'none';
         document.getElementById('teamSelection').style.display = 'block';
     }
@@ -112,6 +148,7 @@ function renderUI() {
     document.getElementById('team2Count').textContent = teamStats.team2Count;
 
     renderShop();
+    renderAttacks();
 }
 
 function renderShop() {
@@ -133,6 +170,74 @@ function renderShop() {
         }
         shopGrid.appendChild(itemEl);
     });
+}
+
+function renderAttacks() {
+    // Show voting interface or "Voted" message
+    const votingEl = document.getElementById('attackVoting');
+    const votedEl = document.getElementById('attackVoted');
+    
+    if (userData.hasVoted) {
+        votingEl.style.display = 'none';
+        votedEl.style.display = 'flex';
+    } else {
+        votingEl.style.display = 'block';
+        votedEl.style.display = 'none';
+        
+        const attackGrid = document.getElementById('attackGrid');
+        attackGrid.innerHTML = ''; // Clear current grid
+
+        attackOptions.forEach(attack => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'attack-item';
+            itemEl.innerHTML = `
+                <div class="attack-item-icon">${attack.icon}</div>
+                <div class="attack-item-name">${attack.name}</div>
+            `;
+            
+            itemEl.addEventListener('click', () => voteForAttack(attack));
+            attackGrid.appendChild(itemEl);
+        });
+    }
+}
+
+async function voteForAttack(attack) {
+    try {
+        // TODO: Send vote to your API
+        // const response = await fetch('YOUR_API_ENDPOINT/vote', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ attackId: attack.id })
+        // });
+        
+        userData.hasVoted = true;
+        console.log(`Voted for attack: ${attack.name}`);
+        renderUI();
+        
+        // Add your custom logic here based on attack.id
+        switch(attack.id) {
+            case 1: // Fireball
+                console.log('Voted for Fireball attack');
+                break;
+            case 2: // Lightning
+                console.log('Voted for Lightning attack');
+                break;
+            case 3: // Ice Blast
+                console.log('Voted for Ice Blast attack');
+                break;
+            case 4: // Earth Spike
+                console.log('Voted for Earth Spike attack');
+                break;
+            case 5: // Wind Slash
+                console.log('Voted for Wind Slash attack');
+                break;
+            case 6: // Dark Energy
+                console.log('Voted for Dark Energy attack');
+                break;
+        }
+    } catch (error) {
+        console.error('Error voting for attack:', error);
+    }
 }
 
 async function selectTeam(teamNumber) {
