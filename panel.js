@@ -126,6 +126,7 @@ function renderUI() {
     // Enable/disable tabs based on team selection
     const attacksTabBtn = document.getElementById('attacksTabBtn');
     const shopTabBtn = document.getElementById('shopTabBtn');
+    const headerTeamBadge = document.getElementById('headerTeamBadge');
     
     if (userData.team) {
         attacksTabBtn.classList.remove('disabled');
@@ -136,12 +137,20 @@ function renderUI() {
         const badge = document.getElementById('teamBadge');
         badge.textContent = `Team ${userData.team}`;
         badge.className = `team-badge team-${userData.team}`;
+        
+        // Show team badge in header
+        headerTeamBadge.textContent = `Team ${userData.team}`;
+        headerTeamBadge.className = `header-team-badge team-${userData.team}`;
+        headerTeamBadge.style.display = 'block';
     } else {
         attacksTabBtn.classList.add('disabled');
         shopTabBtn.classList.add('disabled');
         
         document.getElementById('currentTeam').style.display = 'none';
         document.getElementById('teamSelection').style.display = 'block';
+        
+        // Hide team badge in header
+        headerTeamBadge.style.display = 'none';
     }
 
     document.getElementById('team1Count').textContent = teamStats.team1Count;
