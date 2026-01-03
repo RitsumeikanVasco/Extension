@@ -100,7 +100,7 @@ function handleAuth(auth) {
 }
 
 // 2. Register it normally for Twitch
-window.Twitch.ext.onAuthorized(handleAuth);
+// window.Twitch.ext.onAuthorized(handleAuth);
 
 // 3. MOCK: Manually trigger it ONLY if testing locally
 if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -289,6 +289,7 @@ document.getElementById('teamOptions').addEventListener('click', (e) => {
 // 3. Twitch Extension Initialization
 window.Twitch.ext.onAuthorized(async (auth) => {
     console.log('Twitch Authorized');
+    handleAuth(auth)
     
     // Fetch initial data
     const [uData, tStats] = await Promise.all([fetchUserData(), fetchTeamStats()]);
