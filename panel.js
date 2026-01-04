@@ -1,6 +1,8 @@
 // ==========================================
 // STATE MANAGEMENT
 // ==========================================
+let socket = null; // Global socket instance
+
 let userData = {
     points: 0,
     team: null,
@@ -13,21 +15,18 @@ let teamStats = {
 };
 
 const shopItems = [
-    { id: 1, name: 'Power Up', icon: '⚡', price: 100 },
-    { id: 2, name: 'Shield', icon: '🛡️', price: 150 },
-    { id: 3, name: 'Boost', icon: '🚀', price: 200 },
-    { id: 4, name: 'Health', icon: '❤️', price: 80 },
-    { id: 5, name: 'Speed', icon: '💨', price: 120 },
-    { id: 6, name: 'Coin x2', icon: '💰', price: 300 }
+    { id: 'Health10', name: 'Health +10', icon: '❤️', price: 50 },
+    { id: 'Health50', name: 'Health +50', icon: '💚', price: 250 },
+    { id: 'Health100', name: 'Health +100', icon: '💙', price: 400 }
 ];
 
 const attackOptions = [
-    { id: 1, name: 'Fireball', icon: '🔥' },
-    { id: 2, name: 'Lightning', icon: '⚡' },
-    { id: 3, name: 'Ice Blast', icon: '❄️' },
-    { id: 4, name: 'Earth Spike', icon: '🌍' },
-    { id: 5, name: 'Wind Slash', icon: '💨' },
-    { id: 6, name: 'Dark Energy', icon: '🌑' }
+    { id: 'STAND_FA', name: 'Punch', icon: '👊' },
+    { id: 'CROUCH', name: 'Crouch', icon: '⬇️' },
+    { id: 'FORWARD_WALK', name: 'Walk Forward', icon: '➡️' },
+    { id: 'BACK_STEP', name: 'Step Back', icon: '⬅️' },
+    { id: 'STAND_GUARD', name: 'Guard', icon: '🛡️' },
+    { id: 'STAND_F_D_DFA', name: 'Punch Up', icon: '👊⬆️' }
 ];
 
 // ==========================================
@@ -83,6 +82,13 @@ function handleAuth(auth) {
             renderUI()
         }
 
+        function updateTeamCounts(counts){
+            teamStats.team1Count = counts.team1Count || 0;
+            teamStats.team2Count = counts.team2Count || 0;
+
+            renderUI()
+        }
+
         // Called when points changed
         socket.on("updatedValues", (points)=>{
             updatePoints(points)
@@ -91,6 +97,24 @@ function handleAuth(auth) {
         // Gets the current points
         socket.emit("getPoints", (points) => {
             updatePoints(points)
+        });
+
+        // Listen for vote reset
+        socket.on("voteReset", () => {
+            console.log("Vote has been reset");
+            userData.hasVoted = false;
+            renderUI();
+        });
+
+        // Listen for team counts changed
+        socket.on("teamCountsChanged", (counts) => {
+            console.log("Team counts updated:", counts);
+            updateTeamCounts(counts);
+        });
+
+        // Gets the current team counts
+        socket.emit("getTeamsCount", (counts) => {
+            updateTeamCounts(counts);
         });
 
         renderUI()
@@ -212,12 +236,11 @@ function renderAttacks() {
 
 async function voteForAttack(attack) {
     try {
-        // TODO: Send vote to your API
-        // const response = await fetch('YOUR_API_ENDPOINT/vote', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ attackId: attack.id })
-        // });
+        // Emit vote to server via socket
+        if (socket && socket.connected) {
+            socket.emit('voteAttack', attack.id);
+            console.log(`Emitted voteAttack: ${attack.id}`);
+        }
         
         userData.hasVoted = true;
         console.log(`Voted for attack: ${attack.name}`);
@@ -225,23 +248,23 @@ async function voteForAttack(attack) {
         
         // Add your custom logic here based on attack.id
         switch(attack.id) {
-            case 1: // Fireball
-                console.log('Voted for Fireball attack');
+            case 'STAND_FA': // Punch
+                console.log('Voted for Punch attack');
                 break;
-            case 2: // Lightning
-                console.log('Voted for Lightning attack');
+            case 'CROUCH': // Crouch
+                console.log('Voted for Crouch action');
                 break;
-            case 3: // Ice Blast
-                console.log('Voted for Ice Blast attack');
+            case 'FORWARD_WALK': // Walk Forward
+                console.log('Voted for Walk Forward action');
                 break;
-            case 4: // Earth Spike
-                console.log('Voted for Earth Spike attack');
+            case 'BACK_STEP': // Step Back
+                console.log('Voted for Step Back action');
                 break;
-            case 5: // Wind Slash
-                console.log('Voted for Wind Slash attack');
+            case 'STAND_GUARD': // Guard
+                console.log('Voted for Guard action');
                 break;
-            case 6: // Dark Energy
-                console.log('Voted for Dark Energy attack');
+            case 'STAND_F_D_DFA': // Punch Up
+                console.log('Voted for Punch Up attack');
                 break;
         }
     } catch (error) {
@@ -256,6 +279,12 @@ async function selectTeam(teamNumber) {
 
 async function purchaseItem(item) {
     if (userData.points >= item.price) {
+        // Emit purchase to server via socket
+        if (socket && socket.connected) {
+            socket.emit('purchaseItem', item.id);
+            console.log(`Emitted purchaseItem: ${item.id}`);
+        }
+        
         userData.points -= item.price;
         console.log(`Purchased ${item.name}`);
         renderUI();
