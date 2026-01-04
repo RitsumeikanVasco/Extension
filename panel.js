@@ -109,6 +109,11 @@ function handleAuth(auth) {
             renderUI()
         })
 
+        socket.emit("getTeam", (team)=>{
+            userData.team = team
+            renderUI()
+        })
+
         socket.on("teamCountsChanged", (counts) => {
             console.log("Team counts updated:", counts);
             updateTeamCounts(counts);
@@ -290,7 +295,8 @@ async function voteForAttack(attack) {
 }
 
 async function selectTeam(teamNumber) {
-    userData.team = teamNumber;
+    userData.team = teamNumber
+    socket.emit("selectedTeam", teamNumber)
     renderUI();
 }
 
