@@ -89,37 +89,49 @@ function handleAuth(auth) {
             renderUI()
         }
 
-        // Called when points changed
+        // Points \\
         socket.on("updatedValues", (points)=>{
             updatePoints(points)
         })
 
-        // Gets the current points
         socket.emit("getPoints", (points) => {
             updatePoints(points)
-        });
-
-        socket.on("voted", ()=> {
-            userData.hasVoted = true;
-            renderUI();
         })
 
-        // Listen for vote reset
-        socket.on("voteReset", () => {
-            console.log("Vote has been reset");
-            userData.hasVoted = false;
-            renderUI();
-        });
+        // Team \\
+        socket.on("joinedTeam", (team)=>{
+            userData.team = team
+            renderUI()
+        })
 
-        // Listen for team counts changed
+        socket.on("leftTeam", ()=>{
+            userData.team = null
+            renderUI()
+        })
+
         socket.on("teamCountsChanged", (counts) => {
             console.log("Team counts updated:", counts);
             updateTeamCounts(counts);
         });
 
-        // Gets the current team counts
         socket.emit("getTeamsCount", (counts) => {
             updateTeamCounts(counts);
+        });
+
+        // Votes \\
+        socket.on("voted", ()=> {
+            userData.hasVoted = true;
+            renderUI()
+        })
+
+        socket.emit("getVoted", (voted) => {
+            userData.hasVoted = voted
+            renderUI()
+        })
+
+        socket.on("voteReset", () => {
+            userData.hasVoted = false
+            renderUI()
         });
 
         renderUI()
