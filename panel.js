@@ -99,6 +99,11 @@ function handleAuth(auth) {
             updatePoints(points)
         });
 
+        socket.on("voted", ()=> {
+            userData.hasVoted = true;
+            renderUI();
+        })
+
         // Listen for vote reset
         socket.on("voteReset", () => {
             console.log("Vote has been reset");
