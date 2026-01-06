@@ -150,6 +150,7 @@ function handleAuth(auth) {
 // window.Twitch.ext.onAuthorized(handleAuth);
 
 // 3. MOCK: Manually trigger it ONLY if testing locally
+/*
 if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
     console.log("Running in local mock mode...");
     setTimeout(() => {
@@ -162,6 +163,8 @@ if (window.location.hostname === "localhost" || window.location.hostname === "12
         handleAuth(mockAuth); 
     }, 500);
 }
+*/
+
 
 // ==========================================
 // UI LOGIC
@@ -339,11 +342,62 @@ document.getElementById('teamOptions').addEventListener('click', (e) => {
     if (option) selectTeam(parseInt(option.dataset.team));
 });
 
-// 3. Twitch Extension Initialization
+// Function to decode the Twitch JWT
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+}
+
 window.Twitch.ext.onAuthorized(async (auth) => {
-    console.log('Twitch Authorized');
-    handleAuth(auth)
+    const decoded = parseJwt(auth.token);
     
+    // The decoded token contains the real numerical ID in the 'user_id' field 
+    // ONLY IF the user has shared their identity.
+    const realId = decoded.user_id;
+
+    if (auth.userId.startsWith('U')) {
+        console.log("Verified Numerical ID:", realId); // This will be "12345678"
+    } else {
+        console.log("Opaque ID (Not Linked):", realId); // This will be "tHZQJw..."
+    }
+
+    handleAuth(auth);
+});
+
+window.Twitch.ext.onAuthorized(async (auth) => {
+    console.log('Twitch Authorized Event Fired');
+    const decoded = parseJwt(auth.token);
+
+    const realId = decoded.user_id;
+    auth.userId = realId
+
+    // 1. Check if we have a real ID or Opaque ID
+    const isLinked = auth.userId.startsWith('U');
+    const displayId = isLinked ? auth.userId.substring(1) : auth.userId;
+    
+    console.log(isLinked ? "User is Linked:" : "User is Anonymous (Opaque):", displayId);
+
+    // 2. DO NOT return. Call handleAuth regardless so the socket connects.
+    // Your server-side should be able to handle Opaque IDs as keys.
+    handleAuth(auth);
+    
+    // 3. If they aren't linked, you can show a "Link Account" button in your UI
+    // that calls window.Twitch.ext.actions.requestIdShare();
+    if (!isLinked) {
+        console.log("Prompting for identity link...");
+        // Optionally trigger the prompt automatically (can be annoying if done every refresh)
+        window.Twitch.ext.actions.requestIdShare();
+    }
+
     // Fetch initial data
     const [uData, tStats] = await Promise.all([fetchUserData(), fetchTeamStats()]);
     userData = uData;
