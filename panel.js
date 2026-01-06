@@ -106,7 +106,7 @@ function handleAuth(auth) {
 
         socket.on("leftTeam", ()=>{
             userData.team = null
-            switchTab('teams')
+            switchTab('main')
             renderUI()
         })
 
