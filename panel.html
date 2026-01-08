@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Panel</title>
 
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <!-- <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script> -->
+    <script src="lib/socket.io.min.js"></script>
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <link rel="stylesheet" href="panel.css">
 </head>
@@ -17,11 +18,13 @@
                 <span class="points-value" id="pointsValue">0</span>
             </div>
             <div class="points-label">Your Points</div>
+            <div class="header-team-badge" id="headerTeamBadge" style="display: none;"></div>
         </div>
 
         <div class="tabs" id="tabContainer">
-            <button class="tab active" data-tab="main">Main</button>
-            <button class="tab" data-tab="shop">Shop</button>
+            <button class="tab active" data-tab="main">Team</button>
+            <button class="tab disabled" data-tab="attacks" id="attacksTabBtn">Attacks</button>
+            <button class="tab disabled" data-tab="shop" id="shopTabBtn">Shop</button>
         </div>
 
         <div class="content">
@@ -49,6 +52,20 @@
                                 <div class="team-count"><span id="team2Count">0</span> players</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="attacksTab" class="tab-content">
+                <div id="attackVoting" class="attack-voting">
+                    <h2 style="margin-bottom: 20px; text-align: center;">Vote for Next Attack</h2>
+                    <div class="attack-grid" id="attackGrid"></div>
+                </div>
+                <div id="attackVoted" class="attack-voted" style="display: none;">
+                    <div class="voted-message">
+                        <div class="voted-icon">✓</div>
+                        <h2>Voted</h2>
+                        <p>Your vote has been recorded!</p>
                     </div>
                 </div>
             </div>
